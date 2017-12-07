@@ -2,6 +2,7 @@ defmodule Server.Router do
   use Plug.Router
   import Slime, only: [function_from_file: 4]
 
+  plug Plug.Static, at: "public", from: "../public"
   plug :match
   plug :dispatch
 
@@ -12,14 +13,9 @@ defmodule Server.Router do
     Plug.Adapters.Cowboy.http(Server.Router, [])
   end
 
-  get "/" do
+  get "*glob" do
     conn
     |> send_resp(200, Server.Router.template())
-  end
-
-  get "/foo" do
-    conn
-    |> send_resp(200, "This is foo!")
   end
 
   match _ do

@@ -3,8 +3,7 @@ html
   head
     meta name="keywords" description="Slime"
     title = "Wahey it works!"
-    javascript:
-      alert('Slime supports embedded javascript!');
+    script src="public/dist.js" type="text/javascript"
   body
     #id.class
       ul
