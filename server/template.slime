@@ -1,0 +1,12 @@
+doctype html
+html
+  head
+    meta name="keywords" description="Slime"
+    title = "Wahey it works!"
+    javascript:
+      alert('Slime supports embedded javascript!');
+  body
+    #id.class
+      ul
+        = Enum.map [1, 2], fn x ->
+          li = x

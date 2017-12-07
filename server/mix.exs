@@ -23,7 +23,8 @@ defmodule Server.Mixfile do
   defp deps do
     [
       {:cowboy, "1.1.0"},
-      {:plug, "1.4.3"}
+      {:plug, "1.4.3"},
+      {:slime, "1.1.0"}
     ]
   end
 end
