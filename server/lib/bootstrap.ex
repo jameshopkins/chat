@@ -4,6 +4,7 @@ defmodule Server.Bootstrap do
 
   def start(_type, _args) do
     children = [
+      {Server.Storage, []},
       Plug.Adapters.Cowboy.child_spec(:http, Server.Router, [], port: 8080)
     ]
 
