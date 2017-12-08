@@ -1,11 +1,11 @@
-defmodule Server.Bootstrap do
+defmodule Bootstrap do
   use Application
   require Logger
 
   def start(_type, _args) do
     children = [
-      {Server.Storage, []},
-      Plug.Adapters.Cowboy.child_spec(:http, Server.Router, [], port: 8080)
+      {Channels, []},
+      Plug.Adapters.Cowboy.child_spec(:http, Router, [], port: 8080)
     ]
 
     Logger.info("Started application on 8080")

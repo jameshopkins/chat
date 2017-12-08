@@ -15,7 +15,7 @@ defmodule Server.Mixfile do
   def application do
     [
       extra_applications: [:logger, :plug, :cowboy],
-      mod: {Server.Bootstrap, []}
+      mod: {Bootstrap, []}
     ]
   end
 
