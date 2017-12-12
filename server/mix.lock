@@ -4,4 +4,5 @@
   "neotoma": {:hex, :neotoma, "1.7.3", "d8bd5404b73273989946e4f4f6d529e5c2088f5fa1ca790b4dbe81f4be408e61", [], [], "hexpm"},
   "plug": {:hex, :plug, "1.4.3", "236d77ce7bf3e3a2668dc0d32a9b6f1f9b1f05361019946aae49874904be4aed", [], [{:cowboy, "~> 1.0.1 or ~> 1.1", [hex: :cowboy, repo: "hexpm", optional: true]}, {:mime, "~> 1.0", [hex: :mime, repo: "hexpm", optional: false]}], "hexpm"},
   "ranch": {:hex, :ranch, "1.2.1", "a6fb992c10f2187b46ffd17ce398ddf8a54f691b81768f9ef5f461ea7e28c762", [], [], "hexpm"},
-  "slime": {:hex, :slime, "1.1.0", "7069adbb52817c2191af9c756ec44510c02eb75975f4e4a12184f3f8e4007296", [], [{:neotoma, "~> 1.7", [hex: :neotoma, repo: "hexpm", optional: false]}], "hexpm"}}
+  "slime": {:hex, :slime, "1.1.0", "7069adbb52817c2191af9c756ec44510c02eb75975f4e4a12184f3f8e4007296", [], [{:neotoma, "~> 1.7", [hex: :neotoma, repo: "hexpm", optional: false]}], "hexpm"},
+  "socket": {:hex, :socket, "0.3.12", "4a6543815136503fee67eff0932da1742fad83f84c49130c854114153cc549a6", [:mix], [], "hexpm"}}

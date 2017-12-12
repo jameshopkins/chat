@@ -1,22 +1,28 @@
 defmodule Router do
   use Plug.Router
   import Slime, only: [function_from_file: 4]
-  import Channels, only: [add_channel: 1]
 
-  plug Plug.Static,
+  plug(
+    Plug.Static,
     at: "public",
     from: "../public"
-  plug :match
-  plug Plug.Parsers,
-    parsers: [:urlencoded],
-    pass:  ["application/json"],
-    json_decoder: Poison
-  plug :dispatch
+  )
 
-  function_from_file :def, :template, "template.slime", []
+  plug(:match)
+
+  plug(
+    Plug.Parsers,
+    parsers: [:urlencoded],
+    pass: ["application/json"],
+    json_decoder: Poison
+  )
+
+  plug(:dispatch)
+
+  function_from_file(:def, :template, "template.slime", [])
 
   post "/enter" do
-    add_channel conn.body_params["name"]
+    # add_channel conn.body_params["name"]
     conn
     |> send_resp(200, "Success!")
   end
