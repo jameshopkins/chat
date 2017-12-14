@@ -25,7 +25,8 @@ defmodule Server.Mixfile do
       {:cowboy, "1.1.0"},
       {:plug, "1.4.3"},
       {:slime, "1.1.0"},
-      {:socket, "~> 0.3"}
+      {:socket, "~> 0.3"},
+      {:poison, "~> 3.1"}
     ]
   end
 end
