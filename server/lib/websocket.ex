@@ -8,33 +8,33 @@ defmodule WebSocketServer do
   end
 
   def init() do
-    server = Socket.Web.listen! 8000
-    client = server |> Socket.Web.accept!
-    client |> Socket.Web.accept!
+    server = Socket.Web.listen!(8000)
+    client = server |> Socket.Web.accept!()
+    client |> Socket.Web.accept!()
     receive_message(server, client)
   end
 
-  defp process_message({:ok, %{"entity" => "channel"} = instruction}) do
+  defp create_process(%{"entity" => "channel"} = instruction) do
     case instruction["action"] do
       "create" -> Channels.Supervisor.create_channel(instruction["content"])
-      "delete" -> IO.puts "Delete"
-      "edit" -> IO.puts "Edit"
-      _ -> Logger.error "Invalid command"
+      "delete" -> IO.puts("Delete")
+      "edit" -> IO.puts("Edit")
+      _ -> Logger.error("Invalid command")
     end
   end
 
-  defp process_message({:ok, _instruction}) do
-    Logger.info "Matching something other than a create action!"
-  end
-
-  defp process_message({:error, reason, _pos}) do
-    Logger.error("Whoops! #{reason}")
+  defp create_process({:ok, _instruction}) do
+    Logger.info("Matching something other than a create action!")
   end
 
   defp receive_message(server, client) do
-    with {:text, msg} <- client |> Socket.Web.recv!,
-         decoded_msg <- Poison.decode(msg) |> process_message,
-    do: decoded_msg
+    with {:text, msg} <- client |> Socket.Web.recv!(),
+         {:ok, decoded_msg} <- Poison.decode(msg),
+         {:ok, hello} <- create_process(decoded_msg) do
+      IO.inspect(decoded_msg["content"])
+    else
+      err -> err
+    end
 
     receive_message(server, client)
   end

@@ -7,6 +7,7 @@ defmodule Channel do
   alias Channels.Registry, as: Channels
 
   def start_link(name) do
+    # Logger.info(~s("Started channel #{name}"))
     Agent.start_link(fn -> [] end, name: via_tuple(name))
   end
 

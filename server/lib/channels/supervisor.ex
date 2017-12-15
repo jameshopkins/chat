@@ -7,12 +7,7 @@ defmodule Channels.Supervisor do
   end
 
   def create_channel(name) do
-    case Supervisor.start_child(__MODULE__, [name]) do
-      {:ok, pid} -> {:ok, {name, pid}}
-      other -> other
-    end
-
-    Logger.info(~s{Channel created: #{name}})
+    Supervisor.start_child(__MODULE__, [name])
   end
 
   def find_channel(name) do
