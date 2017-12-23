@@ -4,7 +4,7 @@ defmodule Bootstrap do
 
   def start(_type, _args) do
     children = [
-      {Channels.Supervisor, []},
+      {Channels, []},
       {WebSocketServer, []},
       Plug.Adapters.Cowboy.child_spec(:http, Router, [], port: 8080),
       {Registry, [keys: :unique, name: Channels.Registry]}

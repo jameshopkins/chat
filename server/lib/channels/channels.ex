@@ -1,4 +1,4 @@
-defmodule Channels.Supervisor do
+defmodule Channels do
   require Logger
   use Supervisor
 
@@ -6,8 +6,17 @@ defmodule Channels.Supervisor do
     Supervisor.start_link(__MODULE__, [], name: __MODULE__)
   end
 
+  def execute_command(command) do
+    case command.action do
+      "create" -> create_channel(command.entity.content)
+    end
+  end
+
   def create_channel(name) do
-    Supervisor.start_child(__MODULE__, [name])
+    case Supervisor.start_child(__MODULE__, [name]) do
+      {:error, err} -> IO.inspect(err)
+      _ -> Logger.info("created channel: #{name}")
+    end
   end
 
   def find_channel(name) do

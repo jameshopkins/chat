@@ -14,28 +14,28 @@ defmodule WebSocketServer do
     receive_message(server, client)
   end
 
-  defp create_process(%{"entity" => "channel"} = instruction) do
-    case instruction["action"] do
-      "create" -> Channels.Supervisor.create_channel(instruction["content"])
-      "delete" -> IO.puts("Delete")
-      "edit" -> IO.puts("Edit")
-      _ -> Logger.error("Invalid command")
-    end
-  end
-
   defp create_process({:ok, _instruction}) do
     Logger.info("Matching something other than a create action!")
   end
 
   defp receive_message(server, client) do
     with {:text, msg} <- client |> Socket.Web.recv!(),
-         {:ok, decoded_msg} <- Poison.decode(msg),
-         {:ok, hello} <- create_process(decoded_msg) do
-      IO.inspect(decoded_msg["content"])
+         decoded_msg <- Command.decode(msg) do
+      if Command.is_valid?(decoded_msg) do
+        Command.execute(decoded_msg)
+      else
+        IO.inspect(decoded_msg)
+        Logger.error("Invalid command!")
+      end
     else
-      err -> err
+      err -> handle_error(err)
     end
 
     receive_message(server, client)
+  end
+
+  defp handle_error(err) do
+    IO.inspect(err)
+    #  IO.puts("whoops there's an error!")
   end
 end

@@ -6,19 +6,22 @@ defmodule Channel do
   use Agent
   alias Channels.Registry, as: Channels
 
+  defstruct content: nil
+
   def start_link(name) do
     # Logger.info(~s("Started channel #{name}"))
     Agent.start_link(fn -> [] end, name: via_tuple(name))
   end
 
-  def add_message(name, content) do
-    new_message = %Message{
-      created_at: :calendar.universal_time(),
-      content: content
-    }
+  def execute_command(command) do
+    case command.action do
+      "create" -> create_message(command.entity.content, command.entity.channel)
+    end
+  end
 
-    Agent.update(via_tuple(name), fn messages ->
-      [new_message | messages]
+  def create_message(content, channel) do
+    Agent.update(via_tuple(channel), fn messages ->
+      [{content, :calendar.universal_time()} | messages]
     end)
   end
 
