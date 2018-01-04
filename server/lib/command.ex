@@ -4,7 +4,7 @@ defmodule Command do
   """
   require Poison
 
-  defstruct action: nil, created_at: 0, entity: nil
+  defstruct action: nil, entity: nil, status: nil
 
   @schema %{
     action: ["create", "delete", "edit"]
@@ -20,6 +20,10 @@ defmodule Command do
       %Channel{} -> Channels.execute_command(command)
       %Message{} -> Channel.execute_command(command)
     end
+  end
+
+  def encode(message) do
+    Poison.encode(message)
   end
 
   defp get_entity(entity, command) do

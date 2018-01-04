@@ -22,7 +22,8 @@ defmodule WebSocketServer do
     with {:text, msg} <- client |> Socket.Web.recv!(),
          decoded_msg <- Command.decode(msg) do
       if Command.is_valid?(decoded_msg) do
-        Command.execute(decoded_msg)
+        {:ok, status} = Command.execute(decoded_msg)
+        Socket.Web.send!(client, {:text, status})
       else
         IO.inspect(decoded_msg)
         Logger.error("Invalid command!")

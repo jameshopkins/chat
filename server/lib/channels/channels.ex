@@ -8,15 +8,19 @@ defmodule Channels do
 
   def execute_command(command) do
     case command.action do
-      "create" -> create_channel(command.entity.content)
+      "create" -> create_channel(command)
     end
   end
 
-  def create_channel(name) do
-    case Supervisor.start_child(__MODULE__, [name]) do
-      {:error, err} -> IO.inspect(err)
-      _ -> Logger.info("created channel: #{name}")
-    end
+  def create_channel(command) do
+    status = Supervisor.start_child(__MODULE__, [command.entity.content])
+    create_message(command, status)
+    |> Command.encode
+  end
+
+  def create_message(command, {status, _}) do
+    status = if (status == :ok), do: "success", else: "failure"
+    Map.put(command, :status, status)
   end
 
   def find_channel(name) do
