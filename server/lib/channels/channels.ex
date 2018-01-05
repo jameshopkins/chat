@@ -13,14 +13,10 @@ defmodule Channels do
   end
 
   def create_channel(command) do
-    status = Supervisor.start_child(__MODULE__, [command.entity.content])
-    create_message(command, status)
-    |> Command.encode
-  end
+    {status, _} = Supervisor.start_child(__MODULE__, [command.entity.content])
 
-  def create_message(command, {status, _}) do
-    status = if (status == :ok), do: "success", else: "failure"
-    Map.put(command, :status, status)
+    Command.mark_transation_status(command, status)
+    |> Command.encode()
   end
 
   def find_channel(name) do

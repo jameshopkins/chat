@@ -4,7 +4,6 @@ defmodule Channel do
   """
   require Logger
   use Agent
-  alias Channels.Registry, as: Channels
 
   defstruct content: nil
 
@@ -15,14 +14,23 @@ defmodule Channel do
 
   def execute_command(command) do
     case command.action do
-      "create" -> create_message(command.entity.content, command.entity.channel)
+      "create" -> create_message(command)
     end
   end
 
-  def create_message(content, channel) do
-    Agent.update(via_tuple(channel), fn messages ->
-      [{content, :calendar.universal_time()} | messages]
-    end)
+  defp add_to_messages_stack(message, messages) do
+    [{message, :calendar.universal_time()} | messages]
+  end
+
+  def create_message(command) do
+    %Command{ entity: %Message{ channel: channel, content: message } } = command
+
+    status =
+      Agent.update(
+        via_tuple(channel), &(add_to_messages_stack(message, &1))
+      )
+
+    Command.mark_transation_status(command, status) |> Command.encode()
   end
 
   def list_messages(name) do
@@ -30,6 +38,6 @@ defmodule Channel do
   end
 
   defp via_tuple(name) do
-    {:via, Registry, {Channels, name}}
+    {:via, Registry, {Channels.Registry, name}}
   end
 end
