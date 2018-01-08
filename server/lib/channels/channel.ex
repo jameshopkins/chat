@@ -26,11 +26,15 @@ defmodule Channel do
     %Command{ entity: %Message{ channel: channel, content: message } } = command
 
     status =
-      Agent.update(
-        via_tuple(channel), &(add_to_messages_stack(message, &1))
-      )
-
-    Command.mark_transation_status(command, status) |> Command.encode()
+      if Channels.channel_exists?(channel) do
+        Agent.update(
+          via_tuple(channel), &(add_to_messages_stack(message, &1))
+          )
+      else
+        :error
+      end
+    IO.inspect(status)
+    Command.mark_transation_status(command, status)
   end
 
   def list_messages(name) do

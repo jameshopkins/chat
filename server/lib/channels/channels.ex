@@ -16,7 +16,6 @@ defmodule Channels do
     {status, _} = Supervisor.start_child(__MODULE__, [command.entity.content])
 
     Command.mark_transation_status(command, status)
-    |> Command.encode()
   end
 
   def find_channel(name) do
@@ -28,7 +27,7 @@ defmodule Channels do
 
   def channel_exists?(name) do
     case find_channel(name) do
-      [] -> false
+      {:error, _} -> false
       _ -> true
     end
   end
