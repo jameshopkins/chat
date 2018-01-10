@@ -7,15 +7,15 @@ defmodule Channels do
   end
 
   def execute_command(command) do
-    case command.action do
-      "create" -> create_channel(command)
+    task = case command.action do
+      "create" -> &create_channel/1
     end
+    task.(command) |> Command.mark_transation_status(command)
   end
 
   def create_channel(command) do
     {status, _} = Supervisor.start_child(__MODULE__, [command.entity.content])
-
-    Command.mark_transation_status(command, status)
+    status
   end
 
   def find_channel(name) do

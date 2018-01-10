@@ -1,42 +1,49 @@
 defmodule WebSocketServer do
-  use Task
   require Logger
   require Poison
+  use GenServer
 
   def start_link(_) do
-    Task.start_link(__MODULE__, :init, [])
+    GenServer.start_link(__MODULE__, [])
   end
 
-  def init() do
-    server = Socket.Web.listen!(8000)
+  def init(_) do
+    Socket.Web.listen!(8000) |> socket_pool
+  end
+
+  defp handle_incoming_message(msg, client) do
+    decoded_msg = Command.decode(msg)
+
+    if Command.is_valid?(decoded_msg) do
+      {:ok, status} = Command.execute(decoded_msg) |> Command.encode()
+      Socket.Web.send!(client, {:text, status})
+    else
+      Logger.error("Invalid command!")
+    end
+  end
+
+  defp socket_pool(server) do
     client = server |> Socket.Web.accept!()
-    client |> Socket.Web.accept!()
-    receive_message(server, client)
-  end
 
-  defp create_process({:ok, _instruction}) do
-    Logger.info("Matching something other than a create action!")
-  end
+    accept_client = true
 
-  defp receive_message(server, client) do
-    with {:text, msg} <- client |> Socket.Web.recv!(),
-         decoded_msg <- Command.decode(msg) do
-      if Command.is_valid?(decoded_msg) do
-        {:ok, status} = Command.execute(decoded_msg) |> Command.encode()
-        Socket.Web.send!(client, {:text, status})
-      else
-        IO.inspect(decoded_msg)
-        Logger.error("Invalid command!")
+    if accept_client do
+      case client |> Socket.Web.accept!() do
+        :ok ->
+          Connections.add(client)
       end
     else
-      err -> handle_error(err)
+      client |> Socket.Web.close()
     end
-
-    receive_message(server, client)
+  
+    socket_pool(server)
   end
 
-  defp handle_error(err) do
-    IO.inspect(err)
-    #  IO.puts("whoops there's an error!")
-  end
+  #defp receive_message(server, client) do
+  #  case client |> Socket.Web.recv!() do
+  #    {:text, msg} -> msg |> handle_incoming_message(client)
+  #    :close -> handle_connection_close(client)
+  #  end
+  #  receive_message(server, client)
+  #end
 end

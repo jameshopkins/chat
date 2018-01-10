@@ -13,9 +13,10 @@ defmodule Channel do
   end
 
   def execute_command(command) do
-    case command.action do
-      "create" -> create_message(command)
+    task = case command.action do
+      "create" -> &create_message/1
     end
+    task.(command) |> Command.mark_transation_status(command)
   end
 
   defp add_to_messages_stack(message, messages) do
@@ -25,16 +26,13 @@ defmodule Channel do
   def create_message(command) do
     %Command{ entity: %Message{ channel: channel, content: message } } = command
 
-    status =
-      if Channels.channel_exists?(channel) do
-        Agent.update(
-          via_tuple(channel), &(add_to_messages_stack(message, &1))
-          )
-      else
-        :error
-      end
-    IO.inspect(status)
-    Command.mark_transation_status(command, status)
+    if Channels.channel_exists?(channel) do
+      Agent.update(
+        via_tuple(channel), &(add_to_messages_stack(message, &1))
+      )
+    else
+      :error
+    end
   end
 
   def list_messages(name) do

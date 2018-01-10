@@ -15,7 +15,7 @@ defmodule Command do
     "message" => Message
   }
 
-  def mark_transation_status(command, status) do
+  def mark_transation_status(status, command) do
     status = if status == :ok, do: "success", else: "failure"
     Map.put(command, :status, status)
   end
