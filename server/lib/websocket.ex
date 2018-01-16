@@ -4,11 +4,14 @@ defmodule WebSocketServer do
   use GenServer
 
   def start_link(_) do
-    GenServer.start_link(__MODULE__, [])
+    {:ok, pid} = GenServer.start_link(__MODULE__, [])
+    server = Socket.Web.listen!(8000)
+    send(pid, {:start_socket_pool, server})
+    {:ok, pid}
   end
 
   def init(_) do
-    Socket.Web.listen!(8000) |> socket_pool
+    {:ok, nil}
   end
 
   defp handle_incoming_message(msg, client) do
@@ -39,11 +42,5 @@ defmodule WebSocketServer do
     socket_pool(server)
   end
 
-  #defp receive_message(server, client) do
-  #  case client |> Socket.Web.recv!() do
-  #    {:text, msg} -> msg |> handle_incoming_message(client)
-  #    :close -> handle_connection_close(client)
-  #  end
-  #  receive_message(server, client)
-  #end
+  def handle_info({:start_socket_pool, server}, state), do: socket_pool(server)
 end

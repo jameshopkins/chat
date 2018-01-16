@@ -28,7 +28,7 @@ defmodule Connection do
     |> Socket.Web.recv!()
     |> case do
          :close -> {:close, connection}
-         other -> other 
+         other -> other
        end
     |> Connections.broadcast
 
